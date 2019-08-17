@@ -1,0 +1,103 @@
+Sub ticker()
+Dim Current As Worksheet
+For Each Current In Worksheets 'Run each worksheet
+
+' Dims and value assignments
+Dim t As String
+Dim v, i_p, f_p As Double
+Dim last_row As Long
+Dim r As Integer
+Dim Summary_Table_Row As Integer
+
+    
+v = 0
+r = 2
+Range("I1").Value = "Ticker"
+Range("J1").Value = "Yearly Change"
+Range("K1").Value = "Percent Change"
+Range("L1").Value = "Total Stock Volume"
+Range("N1").Value = "Ticker"
+Range("o1").Value = "Value"
+earliest_date = Application.WorksheetFunction.Min(Columns("B"))
+latest_date = Application.WorksheetFunction.Max(Columns("B"))
+Summary_Table_Row = 2
+last_row_raw = Cells(Rows.Count, 1).End(xlUp).Row
+last_row_table = Cells(Rows.Count, 9).End(xlUp).Row
+'MsgBox (earliest_date)
+'MsgBox (latest_date)
+'MsgBox (last_row_raw)
+'MsgBox (last_row_table)
+
+
+'Part 1
+For i = 2 To last_row_raw
+    If Cells(i + 1, 1).Value <> Cells(i, 1).Value Then
+      t = Cells(i, 1).Value
+      v = FormatCurrency(v + Cells(i, 7).Value, 0)
+      Range("I" & Summary_Table_Row).Value = t
+      Range("L" & Summary_Table_Row).Value = v
+     
+      Summary_Table_Row = Summary_Table_Row + 1
+      v = 0
+    Else
+      v = FormatCurrency(v + Cells(i, 7).Value, 0)
+
+    End If
+
+  Next i
+
+
+'Part 2
+For i = 2 To last_row_raw
+    If Cells(i, 2).Value = earliest_date Then
+        i_p = Cells(i, 3).Value
+            ElseIf i_p = 0 Then Change = 0
+        ' Cells(r, 12).Value = i_p
+    ElseIf Cells(i, 2).Value = latest_date Then
+        f_p = Cells(i, 6).Value
+        ' Cells(r, 13).Value = f_p
+        diff = f_p - i_p
+        Cells(r, 10).Value = Format(diff, "#,##0.000000000")
+        Change = Round(((diff / i_p) * 100), 2)
+        Cells(r, 11).Value = ("%" & Change)
+        
+    If diff > 0 Then
+        Cells(r, 10).Interior.ColorIndex = 4
+    Else
+        Cells(r, 10).Interior.ColorIndex = 3
+    End If
+        r = r + 1
+    End If
+ Next i
+  
+
+'Part 3:
+
+small_change = Application.WorksheetFunction.Min(Columns("K"))
+largest_change = Application.WorksheetFunction.Max(Columns("K"))
+largest_v = Application.WorksheetFunction.Max(Columns("L"))
+Range("O2").Value = ("%" & small_change * 100)
+Range("O3").Value = ("%" & largest_change * 100)
+Range("O4").Value = FormatCurrency(largest_v, 0)
+
+For i = 2 To r - 1
+ If Cells(i, 11).Value = small_change Then
+    Cells(2, 14).Value = Cells(i, 9).Value
+  End If
+Next i
+
+For i = 2 To r - 1
+ If Cells(i, 11).Value = largest_change Then
+    Cells(3, 14).Value = Cells(i, 9).Value
+  End If
+Next i
+
+For i = 2 To r - 1
+ If Cells(i, 12).Value = largest_v Then
+    Cells(4, 14).Value = Cells(i, 9).Value
+  End If
+Next i
+
+
+Next
+End Sub
