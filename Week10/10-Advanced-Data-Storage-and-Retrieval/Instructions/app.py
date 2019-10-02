@@ -70,12 +70,28 @@ def station():
 def temp():
     """Return a list of all dates in the last year and temeperatures"""
     
-    query_date2 = dt.date(2017, 8, 23) - dt.timedelta(12*366/12)
+    query_date = dt.date(2017, 8, 23) - dt.timedelta(12*366/12)
 
     query_tobs = session.query(Measurement.date, Measurement.tobs).filter(Measurement.date>query_date).all()
     dict_tobs = dict(query_tobs)
     
     return jsonify(query_tobs)
+
+@app.route("/api/v1.0/<start>")
+def s_date(start):
+    """Return a list of all dates in the last year and temeperatures"""
+    sel2 = [func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)]
+    start = session.query(*sel2).filter(Measurement.date>start).all()
+  
+    return jsonify(start)
+
+@app.route("/api/v1.0/<start>/<end>")
+def s_e_date(start, end):
+    """Return a list of all dates in the last year and temeperatures"""
+    sel3 = [func.min(Measurement.tobs), func.avg(Measurement.tobs), func.max(Measurement.tobs)]
+    start_end = session.query(*sel3).filter(Measurement.date>=start).filter(Measurement.date<=end).all()
+  
+    return jsonify(start_end)
 
 if __name__ == '__main__':
     app.run(debug=True)
