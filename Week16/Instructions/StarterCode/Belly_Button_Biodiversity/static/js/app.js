@@ -35,7 +35,7 @@ function buildCharts(sample) {
 		var data = [
 		{values: data.sample_values.slice(0,10),
 		labels: data.otu_ids.slice(0,10),
-		//hovertext: data.otu_labels,
+		hovertext: data.otu_labels,
 		type: "pie"}];
 
 		var layout = { 
@@ -43,7 +43,6 @@ function buildCharts(sample) {
 			title: "Sample %"
 			};
 		Plotly.plot("pie", data, layout);
-		console.log(data)
 	}),
 
 	// @TODO: Build a Bubble Chart using the sample data
@@ -63,15 +62,73 @@ function buildCharts(sample) {
 		
 		
 		var layout = {
-			title: 'Bubble Chart Hover Text',
-			showlegend: true,
+			title: 'Samples by OTU IDs',
+			xaxis: {
+				title: {
+				  text: 'OTU ID',
+				}
+			},
+			yaxis: {
+				title: {
+				  text: 'OTU SAMPLE VALUE',
+				}
+			}
+			//showlegend: true,
 		};
 		
 		Plotly.newPlot('bubble', data2, layout);
 	});
 
-
-
+	d3.json(`metadata/${sample}`).then(function(sample) {
+		var sample = [
+			{
+			type: "indicator",
+			mode: "gauge+number+delta",
+			value: sample.WFREQ,
+			title: { text: "Belly Button Washing Frequency (per week)", font: { size: 24 } },
+			text: ['0-1', 'ML4', 'ML3', 'ML2', 'ML1',  '6','7','8','9','10'],
+			textinfo: 'text',
+			textposition:'inside',
+			//delta: { reference: 400, increasing: { color: "RebeccaPurple" } },
+			gauge: {
+			axis: { range: [null, 10], tickwidth: 1, tickcolor: "black" },
+			bar: { color: "#061B2F" },
+			bgcolor: "white",
+			borderwidth: 2,
+			bordercolor: "white",
+			steps: [
+				{ range: [0, 1], color: "#DEEDCF" },
+				{ range: [1, 2], color: "#BFE1B0" },
+				{ range: [2, 3], color: "#99D492" },
+				{ range: [3, 4], color: "#74C67A" },
+				{ range: [4, 5], color: "#56B870" },
+				{ range: [5, 6], color: "#39A96B" },
+				{ range: [6, 7], color: "#1D9A6C" },
+				{ range: [7, 8], color: "#188977" },
+				{ range: [8, 9], color: "#137177" },
+				{ range: [9, 10], color: "#0E4D64" }
+			],
+			// threshold: {
+			//   line: { color: "red", width: 4 },
+			//   thickness: 0.75,
+			//   value: 490
+			// }
+			  }
+			}
+		  ];
+		  
+		  var layout = {
+			width: 500,
+			height: 400,
+			margin: { t: 25, r: 25, l: 25, b: 25 },
+			//paper_bgcolor: "lavender",
+			font: { color: "", family: "Arial" }
+		  };
+		  
+		  Plotly.newPlot(gauge, sample, layout);
+	});
+	
+	// var sample = [sample.WFREQ];
 	// @TODO: Build a Pie Chart
 	
     // HINT: You will need to use slice() to grab the top 10 sample_values,
