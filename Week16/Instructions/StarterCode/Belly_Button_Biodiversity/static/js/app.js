@@ -35,8 +35,7 @@ function buildCharts(sample) {
 		var data = [
 		{values: data.sample_values.slice(0,10),
 		labels: data.otu_ids.slice(0,10),
-		text: data.otu_labels,
-    	//hoverinfo="text",
+		//hovertext: data.otu_labels,
 		type: "pie"}];
 
 		var layout = { 
