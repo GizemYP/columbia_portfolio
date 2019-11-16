@@ -48,6 +48,24 @@ def names():
     # Return a list of the column names (sample names)
     return jsonify(list(df.columns)[2:])
 
+@app.route("/samples")
+def samples(sample):
+    """Return `otu_ids`, `otu_labels`,and `sample_values`."""
+    stmt = db.session.query(Samples).statement
+    df = pd.read_sql_query(stmt, db.session.bind)
+
+    pie_df_i = pd.melt(df, id_vars =['otu_id','otu_label'],var_name='sample')\
+	.groupby(['otu_id','otu_label']).sum().reset_index().sort_values(by=['value'],ascending=False).head(10)
+	
+    pie_df_i['perc']= round(pie_df_i['value']/pie_df_i['value'].sum()*100,2)
+    # Format the data to send as json
+    data = {
+        "otu_ids": pie_df_i['otu_id'].tolist(),
+        "sample_values": pie_df_i['perc'].tolist(),
+        "otu_labels": pie_df_i['otu_label'].tolist(),
+    }
+    return jsonify(data)
+
 
 @app.route("/metadata/<sample>")
 def sample_metadata(sample):
@@ -79,29 +97,6 @@ def sample_metadata(sample):
     return jsonify(sample_metadata)
 
 
-@app.route("/samples/<sample>")
-def samples(sample):
-    """Return `otu_ids`, `otu_labels`,and `sample_values`."""
-    stmt = db.session.query(Samples).statement
-    df = pd.read_sql_query(stmt, db.session.bind)
-
-    sample_data = df.loc[df[f'{sample}'] > 1, ["otu_id", "otu_label", f'{sample}']]
-
-    # Filter the data based on the sample number and
-    # only keep rows with values above 1
-    sample_data = df.loc[df[sample] > 1, ["otu_id", "otu_label", f'{sample}']]
-
-    # Sort by sample
-    sample_data.sort_values(by=sample, ascending=False, inplace=True)
-
-    # Format the data to send as json
-    data = {
-        "otu_ids": sample_data.otu_id.values.tolist(),
-        "sample_values": sample_data[sample].values.tolist(),
-        "otu_labels": sample_data.otu_label.tolist(),
-		"type": "pie"
-    }
-    return jsonify(data)
 
 
 if __name__ == "__main__":

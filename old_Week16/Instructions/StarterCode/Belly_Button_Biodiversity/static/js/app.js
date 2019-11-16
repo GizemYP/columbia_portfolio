@@ -1,16 +1,4 @@
 function buildMetadata(sample) {
-	
-	d3.json(`metadata/${sample}`).then(function(data) {
-		
-		var meta = d3.select('#sample-metadata');
-		meta.html("");
-
-		Object.entries(data).forEach(([key, value]) => {
-			meta.append('p')
-			.text(`${key} : ${value}`);
-		});
-	});
-}
 
   // @TODO: Complete the following function that builds the metadata panel
 
@@ -25,59 +13,18 @@ function buildMetadata(sample) {
 
     // BONUS: Build the Gauge Chart
     // buildGauge(data.WFREQ);
-
+}
 
 function buildCharts(sample) {
 
   // @TODO: Use `d3.json` to fetch the sample data for the plots
 
-	d3.json(`samples/${sample}`).then(function(data) {
-		var data = [
-		{values: data.sample_values.slice(0,10),
-		labels: data.otu_ids.slice(0,10),
-		text: data.otu_labels,
-    	//hoverinfo="text",
-		type: "pie"}];
+    // @TODO: Build a Bubble Chart using the sample data
 
-		var layout = { 
-			margin: { t: 30, b: 100 },
-			title: "Sample %"
-			};
-		Plotly.plot("pie", data, layout);
-		console.log(data)
-	}),
-
-	// @TODO: Build a Bubble Chart using the sample data
-	
-	d3.json(`samples/${sample}`).then(function(data2) {
-		var data2 = [{
-			x: data2.otu_ids,
-			y: data2.sample_values,
-			text: data2.otu_labels,
-			type: 'bubble',
-			mode: 'markers',
-			marker: {
-			color: data2.otu_ids,
-			size: data2.sample_values
-			}
-		}];
-		
-		
-		var layout = {
-			title: 'Bubble Chart Hover Text',
-			showlegend: true,
-		};
-		
-		Plotly.newPlot('bubble', data2, layout);
-	});
-
-
-
-	// @TODO: Build a Pie Chart
-	
+    // @TODO: Build a Pie Chart
     // HINT: You will need to use slice() to grab the top 10 sample_values,
     // otu_ids, and labels (10 each).
-} 
+}
 
 function init() {
   // Grab a reference to the dropdown select element
